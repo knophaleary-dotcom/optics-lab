@@ -135,7 +135,7 @@ const NAV_ITEMS = [
         id: "lecture-web",
         type: "document",
         path: "fourier-optics/lecture-web",
-        source: "pages/fourier-optics/教学网页.md",
+        source: "pages/fourier-optics/teaching-webpage.md",
         description: "21页深色主题交互式教学网页",
       },
       {
