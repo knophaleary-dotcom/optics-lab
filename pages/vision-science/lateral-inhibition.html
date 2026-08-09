@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>视觉系统中的空间高通滤波 — 交互式演示</title>
+<style>
+  :root {
+    --bg: #f0f2f5; --surface: #ffffff; --border: #dcdde1;
+    --text: #2c3e50; --heading: #1a1a2e; --muted: #7f8c8d;
+    --accent: #2980b9; --red: #e74c3c; --blue-light: #e8f4f8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.75; font-size: 16px;
+  }
+  .container { max-width: 880px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  .header {
+    text-align: center; border-bottom: 2px solid var(--accent);
+    padding-bottom: 16px; margin-bottom: 32px;
+  }
+  .header h1 { color: var(--heading); font-size: 26px; margin-bottom: 8px; }
+  .header p { color: var(--muted); font-size: 14px; }
+
+  h2 {
+    color: var(--accent); font-size: 20px; margin-top: 40px;
+    border-left: 4px solid var(--red); padding-left: 12px;
+  }
+  p { margin-bottom: 16px; text-align: justify; }
+
+  .highlight-box {
+    background: var(--blue-light); border-left: 4px solid var(--accent);
+    padding: 14px 18px; margin: 24px 0; font-size: 15px; border-radius: 0 6px 6px 0;
+  }
+  .highlight-box strong { color: var(--accent); }
+
+  /* Demo panel */
+  .demo-panel {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 24px; margin: 24px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .demo-canvas-wrap { text-align: center; margin: 12px 0; }
+  canvas { border-radius: 6px; max-width: 100%; cursor: default; }
+  .demo-caption { font-size: 13px; color: var(--muted); margin-top: 8px; font-style: italic; text-align: center; }
+
+  /* Controls */
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;
+    margin: 16px 0 0; padding-top: 16px; border-top: 1px solid var(--border);
+  }
+  .control-group {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    min-width: 100px;
+  }
+  .control-group label { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .control-group input[type=range] { width: 120px; accent-color: var(--accent); }
+  .control-group .val { font-size: 13px; color: var(--heading); font-weight: 700; }
+  button {
+    background: var(--accent); color: #fff; border: none; padding: 6px 16px;
+    border-radius: 4px; cursor: pointer; font-size: 13px; transition: .15s;
+  }
+  button:hover { background: #1a6daa; }
+
+  .summary {
+    margin-top: 40px; padding: 20px 24px;
+    background: linear-gradient(135deg, #e8f4f8 0%, #fef9e7 100%);
+    border-radius: 10px; border: 1px solid var(--border);
+  }
+  .summary h3 { margin-top: 0; }
+  .back-link {
+    display: inline-block; margin-top: 24px; color: var(--accent);
+    text-decoration: none; font-size: 14px;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  @media (max-width: 600px) {
+    .container { padding: 12px; }
+    .header h1 { font-size: 20px; }
+    h2 { font-size: 17px; }
+    canvas { width: 100% !important; height: auto !important; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+  <h1>视觉系统中的空间高通滤波</h1>
+  <p>基于侧抑制 (Lateral Inhibition) 的三种经典错觉 — 交互式演示</p>
+</div>
+
+<p>人类视觉系统内置了类似<strong>空间高通滤波器</strong>的神经计算机制——<strong>侧抑制</strong>。下面的三个演示都可以<strong>拖动滑块调节参数</strong>，亲自体验视觉系统如何"欺骗"你。</p>
+
+<div class="highlight-box">
+  <strong>侧抑制原理：</strong>感光细胞兴奋时，通过水平细胞向周围相邻细胞发送抑制信号。明暗交界处的对比度因此被生理性放大——与机器视觉中拉普拉斯算子边缘检测的逻辑完全一致。
+</div>
+
+<!-- ================================================================ -->
+<!-- 1. 马赫带效应 -->
+<!-- ================================================================ -->
+<h2>一、马赫带效应 (Mach Bands)</h2>
+<p>每个色块内部是<strong>绝对均匀</strong>的——你看到的边缘亮线/暗线是大脑"画"上去的。拖动滑块改变色块数量和对比度，观察交界处的错觉如何变化。</p>
+
+<div class="demo-panel">
+  <div class="demo-canvas-wrap">
+    <canvas id="machCanvas" width="700" height="180"></canvas>
+  </div>
+  <div class="demo-caption">观察相邻色块交界处：左侧边缘偏亮、右侧边缘偏暗。每个色块内部的颜色完全均匀。</div>
+  <div class="controls">
+    <div class="control-group">
+      <label>色块数量</label>
+      <input type="range" id="machBands" min="2" max="10" value="5" step="1">
+      <span class="val" id="machBandsVal">5</span>
+    </div>
+    <div class="control-group">
+      <label>对比度</label>
+      <input type="range" id="machContrast" min="20" max="100" value="70" step="1">
+      <span class="val" id="machContrastVal">70</span>
+    </div>
+    <button onclick="resetMach()">重置默认</button>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 2. 赫曼方格 -->
+<!-- ================================================================ -->
+<h2>二、赫曼方格 (Hermann Grid)</h2>
+<p>快速移动视线，在白色线条的<strong>交叉点</strong>处出现灰色"幽灵斑点"。直视某点则斑点消失。拖动滑块改变线条宽度和间距，体验侧抑制的叠加效应。</p>
+
+<div class="demo-panel">
+  <div class="demo-canvas-wrap">
+    <canvas id="hermannCanvas" width="500" height="500"></canvas>
+  </div>
+  <div class="demo-caption" id="hermannHint">试着快速扫视画面——余光中的交叉点会出现灰斑，但直视的交叉点没有。</div>
+  <div class="controls">
+    <div class="control-group">
+      <label>线条宽度</label>
+      <input type="range" id="hermannWidth" min="6" max="30" value="14" step="1">
+      <span class="val" id="hermannWidthVal">14</span>
+    </div>
+    <div class="control-group">
+      <label>格子间距</label>
+      <input type="range" id="hermannSpacing" min="60" max="160" value="100" step="5">
+      <span class="val" id="hermannSpacingVal">100</span>
+    </div>
+    <div class="control-group">
+      <label>模拟灰斑强度</label>
+      <input type="range" id="hermannGhost" min="0" max="80" value="0" step="1">
+      <span class="val" id="hermannGhostVal">0</span>
+    </div>
+    <button onclick="resetHermann()">重置默认</button>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 3. 同时对比度 -->
+<!-- ================================================================ -->
+<h2>三、同时对比度 (Simultaneous Contrast)</h2>
+<p>左右两个灰色方块物理颜色<strong>完全相同</strong>。底部"连接桥"证明了这一点。拖动滑块调节背景，观察同一灰色在不同背景下主观亮度的变化。</p>
+
+<div class="demo-panel">
+  <div class="demo-canvas-wrap">
+    <canvas id="contrastCanvas" width="700" height="280"></canvas>
+  </div>
+  <div class="demo-caption">用手指或纸条遮住中间的黑白分界线，两个灰色方块会立刻"变回"相同。</div>
+  <div class="controls">
+    <div class="control-group">
+      <label>左背景亮度</label>
+      <input type="range" id="contrastBgL" min="5" max="80" value="15" step="1">
+      <span class="val" id="contrastBgLVal">15</span>
+    </div>
+    <div class="control-group">
+      <label>右背景亮度</label>
+      <input type="range" id="contrastBgR" min="120" max="250" value="230" step="1">
+      <span class="val" id="contrastBgRVal">230</span>
+    </div>
+    <div class="control-group">
+      <label>方块灰度</label>
+      <input type="range" id="contrastBlock" min="60" max="200" value="122" step="1">
+      <span class="val" id="contrastBlockVal">122</span>
+    </div>
+    <button onclick="resetContrast()">重置默认</button>
+  </div>
+</div>
+
+<!-- Summary -->
+<div class="summary">
+  <h3>总结</h3>
+  <p>马赫带、赫曼方格和同时对比度并非"缺陷"，而是演化的馈赠。侧抑制让我们的视觉系统在光照剧烈变化的环境中，依然能敏锐捕捉物体的轮廓与边界——这与数字图像处理中的<strong>空间高通滤波（拉普拉斯算子）</strong>在数学上完全等价。</p>
+</div>
+
+<a class="back-link" href="../../index.html">← 返回 Optics Lab 首页</a>
+
+</div>
+
+<!-- ================================================================ -->
+<!-- Interactive Canvas Scripts -->
+<!-- ================================================================ -->
+<script>
+// =========================================================
+// 1. 马赫带效应 — Interactive Canvas
+// =========================================================
+(function(){
+  const canvas = document.getElementById('machCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  const $bands = document.getElementById('machBands');
+  const $bandsV = document.getElementById('machBandsVal');
+  const $contrast = document.getElementById('machContrast');
+  const $contrastV = document.getElementById('machContrastVal');
+
+  function draw() {
+    const N = parseInt($bands.value);
+    const contrast = parseInt($contrast.value) / 100;
+    const bw = W / N;
+    const minLum = Math.max(0, 0.3 - contrast * 0.5);
+    const maxLum = Math.min(1, 0.3 + contrast * 0.8);
+
+    // Draw uniform gradient bands
+    for (let i = 0; i < N; i++) {
+      const t = i / (N - 1);
+      const lum = maxLum - t * (maxLum - minLum);
+      const gray = Math.round(lum * 255);
+      ctx.fillStyle = `rgb(${gray},${gray},${gray})`;
+      ctx.fillRect(Math.floor(i * bw), 0, Math.ceil(bw), H);
+    }
+
+    // Overlay: draw a thin line at each boundary to show what your brain DOESN'T see
+    // (The point: the bands ARE uniform, the edges you perceive are an illusion)
+  }
+
+  function update() {
+    $bandsV.textContent = $bands.value;
+    $contrastV.textContent = $contrast.value;
+    draw();
+  }
+
+  $bands.oninput = update;
+  $contrast.oninput = update;
+
+  window.resetMach = function() {
+    $bands.value = 5;
+    $contrast.value = 70;
+    update();
+  };
+
+  update();
+})();
+
+// =========================================================
+// 2. 赫曼方格 — Interactive Canvas
+// =========================================================
+(function(){
+  const canvas = document.getElementById('hermannCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  const $width = document.getElementById('hermannWidth');
+  const $widthV = document.getElementById('hermannWidthVal');
+  const $spacing = document.getElementById('hermannSpacing');
+  const $spacingV = document.getElementById('hermannSpacingVal');
+  const $ghost = document.getElementById('hermannGhost');
+  const $ghostV = document.getElementById('hermannGhostVal');
+
+  function draw() {
+    const barW = parseInt($width.value);
+    const gap = parseInt($spacing.value);
+    const ghostAlpha = parseInt($ghost.value) / 100;
+
+    // Black background
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, W, H);
+
+    // Draw white grid bars
+    ctx.fillStyle = '#fff';
+    // Vertical bars
+    let x = gap;
+    const barPositions = [];
+    while (x < W) {
+      barPositions.push(x);
+      ctx.fillRect(x, 0, barW, H);
+      x += gap + barW;
+    }
+    // Horizontal bars
+    let y = gap;
+    const hBarPositions = [];
+    while (y < H) {
+      hBarPositions.push(y);
+      ctx.fillRect(0, y, W, barW);
+      y += gap + barW;
+    }
+
+    // Ghost dots at intersections (only visible when slider > 0)
+    // This simulates what your peripheral vision "sees"
+    if (ghostAlpha > 0.01) {
+      for (const bx of barPositions) {
+        for (const by of hBarPositions) {
+          const cx = bx + barW / 2;
+          const cy = by + barW / 2;
+          // Radial gradient: darker at center
+          const grad = ctx.createRadialGradient(cx, cy, 2, cx, cy, barW * 0.9);
+          grad.addColorStop(0, `rgba(80,80,80,${ghostAlpha})`);
+          grad.addColorStop(0.4, `rgba(120,120,120,${ghostAlpha * 0.6})`);
+          grad.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.fillStyle = grad;
+          ctx.fillRect(cx - barW, cy - barW, barW * 2, barW * 2);
+        }
+      }
+    }
+  }
+
+  function update() {
+    $widthV.textContent = $width.value + 'px';
+    $spacingV.textContent = $spacing.value + 'px';
+    $ghostV.textContent = $ghost.value + '%';
+    draw();
+  }
+
+  $width.oninput = update;
+  $spacing.oninput = update;
+  $ghost.oninput = update;
+
+  window.resetHermann = function() {
+    $width.value = 14;
+    $spacing.value = 100;
+    $ghost.value = 0;
+    update();
+  };
+
+  update();
+})();
+
+// =========================================================
+// 3. 同时对比度 — Interactive Canvas
+// =========================================================
+(function(){
+  const canvas = document.getElementById('contrastCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  const $bgL = document.getElementById('contrastBgL');
+  const $bgLV = document.getElementById('contrastBgLVal');
+  const $bgR = document.getElementById('contrastBgR');
+  const $bgRV = document.getElementById('contrastBgRVal');
+  const $block = document.getElementById('contrastBlock');
+  const $blockV = document.getElementById('contrastBlockVal');
+
+  function draw() {
+    const bgL = parseInt($bgL.value);
+    const bgR = parseInt($bgR.value);
+    const blockGray = parseInt($block.value);
+
+    const mid = W / 2;
+    const blockSize = 100;
+    const blockY = 55;
+    const bridgeY = 190;
+    const bridgeH = 14;
+
+    // Left background
+    ctx.fillStyle = `rgb(${bgL},${bgL},${bgL})`;
+    ctx.fillRect(0, 0, mid, H);
+    // Right background
+    ctx.fillStyle = `rgb(${bgR},${bgR},${bgR})`;
+    ctx.fillRect(mid, 0, mid, H);
+
+    // Center grey blocks (same color both sides!)
+    ctx.fillStyle = `rgb(${blockGray},${blockGray},${blockGray})`;
+    const bx = mid - blockSize - 15;
+    ctx.fillRect(bx, blockY, blockSize, blockSize);          // left block
+    ctx.fillRect(mid + 15, blockY, blockSize, blockSize);    // right block
+
+    // Bridge bar — proves the blocks are physically identical
+    ctx.fillRect(bx, bridgeY, (mid + 15 + blockSize) - bx, bridgeH);
+
+    // Labels
+    ctx.fillStyle = bgL < 40 ? '#aaa' : '#333';
+    ctx.font = 'bold 13px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('深色背景', mid / 2, 40);
+    ctx.fillStyle = bgR > 180 ? '#555' : '#ddd';
+    ctx.fillText('浅色背景', mid + mid / 2, 40);
+
+    // Arrow labels on bridge
+    ctx.fillStyle = '#e74c3c';
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('← 物理颜色完全相同 →', W / 2, bridgeY + bridgeH + 16);
+
+    // Gray value display
+    ctx.fillStyle = blockGray > 150 ? '#000' : '#fff';
+    ctx.font = 'bold 12px monospace';
+    ctx.fillText(`#${blockGray.toString(16).padStart(2,'0').repeat(3)}`, bx + blockSize/2, blockY + blockSize/2 + 4);
+    ctx.fillText(`#${blockGray.toString(16).padStart(2,'0').repeat(3)}`, mid + 15 + blockSize/2, blockY + blockSize/2 + 4);
+  }
+
+  function update() {
+    $bgLV.textContent = $bgL.value;
+    $bgRV.textContent = $bgR.value;
+    $blockV.textContent = $block.value;
+    draw();
+  }
+
+  $bgL.oninput = update;
+  $bgR.oninput = update;
+  $block.oninput = update;
+
+  window.resetContrast = function() {
+    $bgL.value = 15;
+    $bgR.value = 230;
+    $block.value = 122;
+    update();
+  };
+
+  update();
+})();
+</script>
+
+</body>
+</html>

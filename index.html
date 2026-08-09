@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Optics Lab — 光学学习档案</title>
+
+<!-- 1. 配置文件 — 修改这个文件来改风格/颜色/导航 -->
+<script src="config.js"></script>
+
+<!-- 2. 样式 -->
+<style id="dynamic-theme"></style>
+<link rel="stylesheet" href="assets/css/style.css">
+
+<!-- 3. MathJax: LaTeX公式渲染 -->
+<script>
+if (CONFIG.mathJax?.enabled !== false) {
+  window.MathJax = {
+    tex: {
+      inlineMath: CONFIG.mathJax.inlineDelimiters || [['$','$']],
+      displayMath: CONFIG.mathJax.displayDelimiters || [['$$','$$']],
+      processEscapes: true,
+    },
+    options: {
+      ignoreHtmlClass: 'no-math',
+    }
+  };
+}
+</script>
+<script id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+
+</head>
+<body>
+
+<!-- ===== 侧边导航栏 ===== -->
+<nav id="sidebar">
+  <div class="nav-header">
+    <h1 id="site-name"></h1>
+    <p id="site-subtitle"></p>
+  </div>
+  <div class="nav-items" id="nav-items"></div>
+  <div class="nav-footer">
+    <small id="nav-footer-text"></small>
+  </div>
+</nav>
+
+<!-- 移动端菜单按钮 -->
+<button id="menu-toggle" onclick="toggleSidebar()" title="菜单">☰</button>
+
+<!-- ===== 主内容区 ===== -->
+<main id="content">
+  <!-- 首页 Hero -->
+  <div id="homepage">
+    <div class="hero" id="hero-section">
+      <h1 id="hero-title"></h1>
+      <p id="hero-subtitle"></p>
+    </div>
+    <div id="recent-updates"></div>
+  </div>
+
+  <!-- 文章/文档内容区 (动态渲染) -->
+  <article id="article-view" style="display:none;"></article>
+
+  <!-- 加载指示器 -->
+  <div id="loading" style="display:none;text-align:center;padding:60px;">
+    <p style="color:var(--muted)">加载中...</p>
+  </div>
+  <div id="error-msg" style="display:none;text-align:center;padding:60px;">
+    <p style="color:var(--accent2)">⚠️ 内容加载失败。请检查文件路径是否正确。</p>
+  </div>
+</main>
+
+<!-- ===== 回到顶部 ===== -->
+<button id="btn-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- 4. 核心引擎 -->
+<script src="assets/js/main.js"></script>
+
+</body>
+</html>

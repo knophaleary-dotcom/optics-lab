@@ -1,0 +1,151 @@
+/* ============================================================
+   Optics Lab — 全局样式
+   颜色由 config.js 动态注入, 这里只定义布局和组件样式
+   ============================================================ */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.75;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ---- 侧边导航栏 ---- */
+#sidebar {
+  width: var(--nav-width);
+  min-height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  position: fixed; top: 0; left: 0; bottom: 0;
+  overflow-y: auto; z-index: 100;
+  padding: 20px 0;
+  display: flex; flex-direction: column;
+  transition: transform 0.3s;
+}
+.nav-header { padding: 12px 18px 20px; border-bottom: 1px solid var(--border); }
+.nav-header h1 { font-size: 18px; color: var(--accent); font-family: var(--font-heading); }
+.nav-header p { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.nav-items { flex: 1; padding: 8px 0; overflow-y: auto; }
+.nav-section { margin: 2px 0; }
+.nav-category {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 18px; font-size: 14px; font-weight: 600;
+  color: var(--heading); cursor: pointer; user-select: none;
+  transition: background 0.15s;
+}
+.nav-category:hover { background: rgba(128,128,128,0.08); }
+.nav-category::after {
+  content: '▾'; margin-left: auto; font-size: 10px;
+  transition: transform 0.2s;
+}
+.nav-category.open::after { transform: rotate(-180deg); }
+.nav-icon { font-size: 16px; }
+.nav-sublist { padding: 2px 0 4px 18px; }
+.nav-link {
+  display: block; padding: 5px 12px; font-size: 13px;
+  color: var(--muted); text-decoration: none; border-radius: 4px;
+  transition: all 0.12s; margin: 1px 4px;
+}
+.nav-link:hover { color: var(--heading); background: rgba(88,166,255,0.08); }
+.nav-link.active { color: var(--accent); background: rgba(88,166,255,0.12); font-weight: 600; }
+.nav-footer { padding: 12px 18px; border-top: 1px solid var(--border); font-size: 11px; color: var(--muted); }
+
+/* ---- 主内容区 ---- */
+#content {
+  margin-left: var(--nav-width);
+  flex: 1; max-width: var(--content-max);
+  padding: 40px 48px 80px;
+  min-height: 100vh;
+}
+@media (max-width: 768px) {
+  #sidebar { transform: translateX(-100%); }
+  #sidebar.show { transform: translateX(0); }
+  #content { margin-left: 0; padding: 20px; }
+  #menu-toggle { display: block !important; }
+}
+
+/* ---- 移动端菜单按钮 ---- */
+#menu-toggle {
+  display: none; position: fixed; top: 12px; left: 12px; z-index: 200;
+  background: var(--surface); color: var(--heading); border: 1px solid var(--border);
+  font-size: 20px; padding: 4px 10px; border-radius: 6px; cursor: pointer;
+}
+
+/* ---- 首页 Hero ---- */
+.hero {
+  text-align: center; padding: 60px 20px 40px;
+  border-bottom: 1px solid var(--border); margin-bottom: 32px;
+}
+.hero h1 { font-size: 32px; color: var(--heading); font-family: var(--font-heading); }
+.hero p { font-size: 16px; color: var(--muted); margin-top: 8px; }
+
+/* ---- 卡片网格 (最近更新) ---- */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin: 16px 0; }
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: 18px; cursor: pointer; transition: all 0.2s;
+}
+.card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.card-badge {
+  display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px;
+  background: rgba(88,166,255,0.15); color: var(--accent); margin-bottom: 8px;
+}
+.card h3 { font-size: 15px; color: var(--heading); margin-bottom: 4px; }
+.card p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+/* ---- 文章/文档内容 ---- */
+.doc-content { max-width: 800px; margin: 0 auto; }
+.doc-content h1 {
+  font-size: 26px; color: var(--heading); border-bottom: 2px solid var(--border);
+  padding-bottom: 10px; margin-bottom: 20px; font-family: var(--font-heading);
+}
+.doc-content h2 {
+  font-size: 20px; color: var(--accent); margin: 32px 0 12px;
+  padding-top: 8px; border-bottom: 1px solid var(--border);
+}
+.doc-content h3 { font-size: 16px; color: var(--accent2); margin: 20px 0 8px; }
+.doc-content h4 { font-size: 14px; color: var(--heading); margin: 16px 0 6px; }
+.doc-content p { margin-bottom: 12px; }
+.doc-content ul, .doc-content ol { padding-left: 24px; margin-bottom: 12px; }
+.doc-content li { margin-bottom: 4px; }
+.doc-content a { color: var(--accent); text-decoration: none; }
+.doc-content a:hover { text-decoration: underline; }
+.doc-content strong { color: var(--heading); }
+.doc-content img { max-width: 100%; border: 1px solid var(--border); border-radius: 6px; margin: 12px 0; }
+.doc-content table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+.doc-content th, .doc-content td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; }
+.doc-content th { background: var(--surface); color: var(--accent); font-weight: 600; }
+.doc-content tr:nth-child(even) { background: rgba(128,128,128,0.04); }
+.doc-content blockquote {
+  border-left: 3px solid var(--accent); padding: 10px 16px; margin: 16px 0;
+  background: rgba(88,166,255,0.06); border-radius: 0 6px 6px 0; color: var(--muted);
+}
+.doc-content hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+/* ---- 代码块 ---- */
+.doc-content pre {
+  background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px;
+  padding: 14px 18px; overflow-x: auto; margin: 16px 0; font-size: 13px;
+  font-family: var(--font-code); line-height: 1.5;
+}
+.doc-content pre code { background: none; padding: 0; }
+.inline-code, code {
+  background: var(--code-bg); padding: 2px 6px; border-radius: 4px;
+  font-family: var(--font-code); font-size: 0.9em; border: 1px solid var(--border);
+}
+
+/* ---- 回到顶部 ---- */
+#btn-top {
+  position: fixed; bottom: 20px; right: 20px; z-index: 50;
+  background: var(--accent); color: #fff; border: none;
+  padding: 8px 14px; border-radius: 6px; cursor: pointer;
+  font-size: 16px; opacity: 0.5; transition: opacity 0.2s;
+}
+#btn-top:hover { opacity: 1; }
+
+/* ---- 加载/错误状态 ---- */
+#loading p, #error-msg p { font-size: 14px; }
