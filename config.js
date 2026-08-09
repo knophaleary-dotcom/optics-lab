@@ -127,7 +127,7 @@ const NAV_ITEMS = [
         id: "lecture-notes",
         type: "document",        // type: "document" | "interactive" | "program" | "link"
         path: "fourier-optics/lecture-notes",
-        source: "/pages/fourier-optics/lecture-notes.md",
+        source: "pages/fourier-optics/lecture-notes.md",
         description: "7讲完整讲义，标注Goodman章节",
       },
       {
@@ -135,7 +135,7 @@ const NAV_ITEMS = [
         id: "lecture-web",
         type: "document",
         path: "fourier-optics/lecture-web",
-        source: "/pages/fourier-optics/教学网页.md",
+        source: "pages/fourier-optics/教学网页.md",
         description: "21页深色主题交互式教学网页",
       },
       {
@@ -143,7 +143,7 @@ const NAV_ITEMS = [
         id: "sim01",
         type: "program",
         path: "fourier-optics/sim01",
-        source: "/pages/fourier-optics/sim01.md",
+        source: "pages/fourier-optics/sim01.md",
         description: "rect→sinc, comb, 卷积定理, 艾里斑",
       },
       {
@@ -151,7 +151,7 @@ const NAV_ITEMS = [
         id: "sim02",
         type: "program",
         path: "fourier-optics/sim02",
-        source: "/pages/fourier-optics/sim02.md",
+        source: "pages/fourier-optics/sim02.md",
         description: "角谱法ASM、夫琅禾费、菲涅尔衍射",
       },
       {
@@ -159,7 +159,7 @@ const NAV_ITEMS = [
         id: "sim03",
         type: "program",
         path: "fourier-optics/sim03",
-        source: "/pages/fourier-optics/sim03.md",
+        source: "pages/fourier-optics/sim03.md",
         description: "透镜傅里叶变换、4f空间滤波",
       },
       {
@@ -167,7 +167,7 @@ const NAV_ITEMS = [
         id: "sim04",
         type: "program",
         path: "fourier-optics/sim04",
-        source: "/pages/fourier-optics/sim04.md",
+        source: "pages/fourier-optics/sim04.md",
         description: "GS算法、达曼光栅3×3",
       },
       {
@@ -175,7 +175,7 @@ const NAV_ITEMS = [
         id: "angle-mapper",
         type: "interactive",
         path: "fourier-optics/angle-mapper",
-        source: "/pages/fourier-optics/angle-mapper.md",
+        source: "pages/fourier-optics/angle-mapper.md",
         description: "sin(θ)=λ/Lx 几何演示",
       },
     ],
@@ -192,7 +192,7 @@ const NAV_ITEMS = [
         id: "sl-overview",
         type: "document",
         path: "structured-light/overview",
-        source: "/pages/structured-light/overview.md",
+        source: "pages/structured-light/overview.md",
         description: "系统架构、光学链路、文件结构",
       },
       {
@@ -200,7 +200,7 @@ const NAV_ITEMS = [
         id: "sl-vcsel",
         type: "program",
         path: "structured-light/vcsel",
-        source: "/pages/structured-light/vcsel.md",
+        source: "pages/structured-light/vcsel.md",
         description: "随机坐标生成，三种布局策略",
       },
       {
@@ -208,7 +208,7 @@ const NAV_ITEMS = [
         id: "sl-doe",
         type: "program",
         path: "structured-light/doe",
-        source: "/pages/structured-light/doe.md",
+        source: "pages/structured-light/doe.md",
         description: "Dammann光栅、IFTA、3×3分束",
       },
       {
@@ -216,7 +216,7 @@ const NAV_ITEMS = [
         id: "sl-depth",
         type: "program",
         path: "structured-light/depth",
-        source: "/pages/structured-light/depth.md",
+        source: "pages/structured-light/depth.md",
         description: "NCC块匹配、SGM、视差→深度",
       },
       {
@@ -224,7 +224,7 @@ const NAV_ITEMS = [
         id: "sl-speckle-demo",
         type: "interactive",
         path: "structured-light/speckle-demo",
-        source: "/pages/structured-light/speckle-demo.md",
+        source: "pages/structured-light/speckle-demo.md",
         description: "浏览器内交互查看3×3散斑场",
       },
     ],
@@ -241,7 +241,7 @@ const NAV_ITEMS = [
         id: "demo-angle",
         type: "interactive",
         path: "interactive/angle-mapper",
-        source: "/pages/interactive/angle-mapper.md",
+        source: "pages/interactive/angle-mapper.md",
         description: "sin(θ)=λ/Lx 几何关系演示",
       },
       {
@@ -249,7 +249,7 @@ const NAV_ITEMS = [
         id: "demo-slit",
         type: "interactive",
         path: "interactive/slit-diffraction",
-        source: "/pages/interactive/slit-diffraction.md",
+        source: "pages/interactive/slit-diffraction.md",
         description: "拖动滑块改变缝宽和波长",
       },
     ],
@@ -281,7 +281,7 @@ const NAV_ITEMS = [
         id: "guide",
         type: "document",
         path: "about/guide",
-        source: "/pages/about/guide.md",
+        source: "pages/about/guide.md",
         description: "如何添加内容、修改样式、上传文件",
       },
       {
@@ -289,7 +289,7 @@ const NAV_ITEMS = [
         id: "spec",
         type: "document",
         path: "about/spec",
-        source: "/pages/about/spec.md",
+        source: "pages/about/spec.md",
         description: "文档格式要求、LaTeX规范、程序规范",
       },
     ],
